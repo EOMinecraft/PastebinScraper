@@ -10,6 +10,8 @@ namespace PastebinCrawler
     public class Paste
     {
         public static List<Paste> pastes = new List<Paste>();
+        public static string categoryFilter { get; set; }
+        public static string contentFilter { get; set; }
         public string pid { get; set; }
         public string category { get; set; }
         public string title { get; set; }
@@ -63,9 +65,18 @@ namespace PastebinCrawler
                     time = true;
                 }
             }
-            if (!Exist(pid))
+            if (!Exist(pid) && pid.Trim(' ') != "")
             {
+                System.Windows.Forms.MessageBox.Show(pid);
+                if (categoryFilter != null && category.ToLower() != categoryFilter.ToLower())
+                {
+                    return;
+                }
                 content = Program.client.DownloadString(Program.PASTEBIN_URL + "raw/" +  pid);
+                if (contentFilter != null && !content.ToLower().Contains(contentFilter.ToLower()))
+                {
+                    return;
+                }
                 pastes.Add(this);
             }
         }

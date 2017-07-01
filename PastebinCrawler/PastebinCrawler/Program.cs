@@ -14,8 +14,10 @@ namespace PastebinCrawler
         internal const string PASTEBIN_URL = "https://pastebin.com/";
         private const string PASTEBIN_ARCHIVE = PASTEBIN_URL + "archive";
         private static string SAVE_LOCATION = Environment.GetFolderPath(Environment.SpecialFolder.Desktop) + "\\pastes\\";
+
         internal static WebClient client = null;
         private static List<Paste> pastes = new List<Paste>();
+
 
         private static void InitClient()
         {
@@ -25,52 +27,86 @@ namespace PastebinCrawler
                 client.Proxy = null;
             }
         }
-
+        private static string ParseArg(string[] args, string term)
+        {
+            for (int i = 0; i < args.Length; i++)
+            {
+                if (args[i] == "-" + term)
+                {
+                    return args[i + 1];
+                }
+            }
+            return null;
+        }
         static void Main(string[] args)
         {
             InitClient();
+            Paste.categoryFilter = ParseArg(args, "c");
+            Paste.contentFilter = ParseArg(args, "s");
 
             while (true)
             {
-                string tbl = TextHelper.StrBetweenStr(DumpRawArchive(), "<table class=" + @"""" + "maintable" + @"""" + ">", "</table>");
-                string[] records = tbl.Split(new string[] { "<td>" }, StringSplitOptions.None);
-
-                foreach (string record in records)
+                try
                 {
-                    new Paste(record);
-                }
-                Console.WriteLine("Pastes: " + Paste.pastes.Count);
+                    string dump = DumpRawArchive();
+                    if (dump.Contains("You are scraping our site way too fast"))
+                    {
+                        Console.WriteLine("Maybe blocked?");
+                    }
+                    else
+                    {
+                        string tbl = TextHelper.StrBetweenStr(dump, "<table class=" + @"""" + "maintable" + @"""" + ">", "</table>");
 
-                foreach (Paste paste in Paste.pastes)
+                        string[] records = tbl.Split(new string[] { "<td>" }, StringSplitOptions.None);
+
+                        foreach (string record in records)
+                        {
+                            new Paste(record);
+                        }
+                        Console.WriteLine("Pastes: " + Paste.pastes.Count);
+
+                        foreach (Paste paste in Paste.pastes)
+                        {
+
+                            string buildPath = SAVE_LOCATION + paste.category + "\\";
+                            string buildFile = buildPath + paste.pid + ".txt";
+                            if (!Directory.Exists(buildPath))
+                            {
+                                Directory.CreateDirectory(buildPath);
+                            }
+
+                            if (!File.Exists(buildPath))
+                            {
+                                File.WriteAllText(buildFile, paste.content);
+                            }
+                        }
+                    }
+                }
+                catch
                 {
-
-                    string buildPath = SAVE_LOCATION + paste.category + "\\";
-                    string buildFile = buildPath + paste.pid + ".txt";
-                    if (!Directory.Exists(buildPath))
-                    {
-                        Directory.CreateDirectory(buildPath);
-                    }
-
-                    if (!File.Exists(buildPath))
-                    {
-                        File.WriteAllText(buildFile, paste.content);
-                    }
+                    Console.WriteLine("Unhandled error");
                 }
 
-                for (int i = 10; i >= 0; i--)
+
+                for (int i = 30; i >= 0; i--)
                 {
                     if (i != 0)
                     {
-                        Console.Write(i + ", ");
+                        Console.Write(i);
+                        for (int ii = 0; ii < 3; ii++)
+                        {
+                            Console.Write(".");
+                            Thread.Sleep(333);
+                        }
                     }
                     else
                     {
                         Console.WriteLine(i);
                     }
-                    Thread.Sleep(1000);
+
                 }
             }
-            
+
         }
 
         private static string DumpRawArchive()
