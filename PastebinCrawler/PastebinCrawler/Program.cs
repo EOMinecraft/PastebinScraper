@@ -61,7 +61,14 @@ namespace PastebinCrawler
 
                         foreach (string record in records)
                         {
-                            new Paste(record);
+                            try
+                            {
+                                new Paste(record);
+                            }
+                            catch
+                            {
+                                continue;
+                            }
                         }
                         Console.WriteLine("Pastes: " + Paste.pastes.Count);
 
@@ -81,14 +88,14 @@ namespace PastebinCrawler
                             }
                         }
                     }
-                }
+            }
                 catch
-                {
-                    Console.WriteLine("Unhandled error");
-                }
+            {
+                Console.WriteLine("Unhandled error");
+            }
 
 
-                for (int i = 30; i >= 0; i--)
+            for (int i = 30; i >= 0; i--)
                 {
                     if (i != 0)
                     {

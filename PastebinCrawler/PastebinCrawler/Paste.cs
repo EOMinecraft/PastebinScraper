@@ -65,9 +65,8 @@ namespace PastebinCrawler
                     time = true;
                 }
             }
-            if (!Exist(pid) && pid.Trim(' ') != "")
+            if (pid != null && !Exist(pid) && pid.Trim(' ') != "")
             {
-                System.Windows.Forms.MessageBox.Show(pid);
                 if (categoryFilter != null && category.ToLower() != categoryFilter.ToLower())
                 {
                     return;
