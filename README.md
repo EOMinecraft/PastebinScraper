@@ -8,4 +8,5 @@ Available arguments:
 #### -s "term" (to scrap only pastes that contains the "term" in its paste)
 
 Every paste will be stored into your "pastes"-folder on your Desktop.
+
 Please do not touch the 30 sec. timer, this is for "anti-pastebin block"
