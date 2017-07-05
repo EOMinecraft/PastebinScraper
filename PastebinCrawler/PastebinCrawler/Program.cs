@@ -14,6 +14,7 @@ namespace PastebinCrawler
         internal const string PASTEBIN_URL = "https://pastebin.com/";
         private const string PASTEBIN_ARCHIVE = PASTEBIN_URL + "archive";
         private static string SAVE_LOCATION = Environment.GetFolderPath(Environment.SpecialFolder.Desktop) + "\\pastes\\";
+        private static int TIMER = 100;
 
         internal static WebClient client = null;
         private static List<Paste> pastes = new List<Paste>();
@@ -95,11 +96,10 @@ namespace PastebinCrawler
             }
 
 
-            for (int i = 30; i >= 0; i--)
+            for (int i = TIMER; i >= 0; i--)
                 {
                     if (i != 0)
                     {
-                        Console.Write(i);
                         for (int ii = 0; ii < 3; ii++)
                         {
                             Console.Write(".");
