@@ -82,7 +82,7 @@ namespace PastebinCrawler
                                 Directory.CreateDirectory(buildPath);
                             }
 
-                            if (!File.Exists(buildPath))
+                            if (!File.Exists(buildFile))
                             {
                                 File.WriteAllText(buildFile, paste.content);
                             }
